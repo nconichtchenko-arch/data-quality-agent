@@ -52,7 +52,7 @@ pip install -r requirements.txt
 
 2. Настрой подключение к БД в файле `.env`:
 ```env
-DATABASE_URL=postgresql+psycopg://dwh_user:dwh_password@localhost:5432/dwh_marketplace
+Создайте файл .env на основе .env.example и укажите свои реальные данные для подключения к БД
 ```
 
 3. Запусти агента (с заглушкой):
