@@ -4,13 +4,14 @@ Pet-проект: AI-агент, который принимает задачу 
 
 ## 📸 Скриншоты
 
-**1. Чат-бот: вопрос на русском → SQL → данные:**
-
+**1. Чат-бот для аналитики продаж (вопрос → SQL → данные):**
 ![Chat Agent](assets/chat_agent.png)
 
 **2. Проверка пропусков (локальная модель Qwen):**
-
 ![Local Agent](assets/local_agent_workflow.png)
+
+**3. Агент для анализа вакансий (база course):**
+![Jobs Agent](assets/jobs_agent.png)
 
 ## 🎯 Зачем это
 
@@ -19,6 +20,10 @@ Pet-проект: AI-агент, который принимает задачу 
 Проект работает в двух режимах:
 - **Облачный** (заглушка/API) — для демонстрации логики.
 - **Локальный** (Ollama + Qwen) — полностью автономный, без интернета и ключей.
+
+Проект поддерживает **две базы данных**:
+- `dwh_marketplace` (аналитика продаж) — агент `agent_chat.py`.
+- `course` (вакансии и отклики) — агент `agent_chat_jobs.py`.
 
 ## 🏗 Архитектура
 
@@ -42,12 +47,15 @@ graph LR
 
 ```
 data-quality-agent/
-├── run_server.py      # Обертка для запуска MCP-сервера (Windows fix)
-├── client.py          # Простой клиент для проверки MCP
-├── agent_mock.py      # Агент с заглушкой LLM (работает без API)
-├── agent_local.py     # Агент с локальной моделью Qwen (Ollama)
-├── agent_chat.py      # Чат-бот (цикл вопросов) с локальной моделью
-├── assets/            # Скриншоты
+├── run_server.py           # MCP-сервер для dwh_marketplace
+├── run_server_course.py    # MCP-сервер для course
+├── client.py               # Проверка подключения к dwh_marketplace
+├── client_course.py        # Проверка подключения к course
+├── agent_mock.py           # Агент с заглушкой LLM (работает без API)
+├── agent_local.py          # Агент с локальной моделью Qwen (Ollama)
+├── agent_chat.py           # Чат-бот для dwh_marketplace
+├── agent_chat_jobs.py      # Чат-бот для course (вакансии)
+├── assets/                 # Скриншоты
 ├── README.md
 └── requirements.txt
 ```
@@ -60,7 +68,7 @@ pip install -r requirements.txt
 ```
 
 ### 2. Настрой подключение к БД
-Создайте файл `.env` на основе `.env.example` и укажите свои реальные данные для подключения к БД.
+Создайте файлы `.env` (для dwh_marketplace) и `.env.course` (для course) на основе `.env.example` и укажите свои реальные данные.
 
 ### 3. Запуск с локальной моделью (рекомендуется)
 Этот режим не требует API-ключей и работает полностью автономно:
@@ -69,11 +77,14 @@ pip install -r requirements.txt
 # Скачайте модель
 ollama pull qwen2.5-coder:7b
 
-# Запустите чат-бота
+# Запустите чат-бота для продаж
 python agent_chat.py
+
+# Или чат-бота для вакансий
+python agent_chat_jobs.py
 ```
 
-**Пример работы чат-бота:**
+**Пример работы чат-бота (продажи):**
 ```
 Вы: Покажи топ-5 товаров по выручке
 ⏳ Думаю (генерация SQL)...
@@ -87,35 +98,44 @@ LIMIT 5;
 {"columns": ["stock_code", "total_revenue"], "rows": [["23843", 168469.6], ["22423", 142592.95], ...], "row_count": 5, "execution_time_ms": 2082.23}
 ```
 
+**Пример работы чат-бота (вакансии):**
+```
+Вы: Покажи топ-5 компаний по количеству вакансий
+⏳ Думаю (генерация SQL)...
+📝 SQL: SELECT v.employer_name, COUNT(a.id) AS application_count
+FROM pavel_onichtchenko.vacancies v
+JOIN pavel_onichtchenko.applications a ON v.id = a.vacancy_id
+GROUP BY v.employer_name
+ORDER BY application_count DESC
+LIMIT 5;
+
+📊 Результат:
+{"columns": ["employer_name", "application_count"], "rows": [["Aston", 46], ["Top Selection", 37], ...], "row_count": 5, "execution_time_ms": 136.77}
+```
+
 ### 4. Запуск с заглушкой (без LLM)
 Если нет ни API, ни Ollama:
 ```bash
 python agent_mock.py
 ```
 
-**Пример вывода:**
-```
-📝 Задача: Проверь пропуски в total_revenue
-🤖 LLM сгенерировала SQL:
-SELECT COUNT(*) AS total_rows, COUNT(*) FILTER (WHERE total_revenue IS NULL) AS null_rows FROM dbt_schema.fct_sales;
-
-✅ Connected to MCP Server
-📊 Результат от агента:
-{"columns": ["total_rows", "null_rows"], "rows": [[387875, 0]], "row_count": 1, "execution_time_ms": 240.73}
-```
-
 ## 💬 Примеры вопросов к агенту
 
+**Для аналитики продаж (`agent_chat.py`):**
 - «Покажи топ-5 товаров по выручке»
 - «Сколько всего уникальных клиентов?»
 - «Какая средняя выручка за день?»
-- «Найди отрицательную выручку, если есть»
+
+**Для базы вакансий (`agent_chat_jobs.py`):**
+- «Сколько всего вакансий?»
+- «Сколько вакансий в статусе sent?»
+- «Покажи топ-5 компаний по количеству вакансий»
 
 ## 🔮 Что дальше
 
 Проект можно расширить:
 - Добавить **Telegram-бота** (чтобы задавать вопросы с телефона).
-- Подключить **второй MCP-сервер** (например, для работы с файлами или API).
+- Подключить **третий MCP-сервер** (например, для работы с API HeadHunter).
 - Настроить **автоматическую проверку качества** (алерты в Telegram при нахождении аномалий).
 
 ## 🔗 Связанные проекты
