@@ -2,11 +2,15 @@
 
 Pet-проект: AI-агент, который принимает задачу на естественном языке (например, «Проверь пропуски в total_revenue»), генерирует SQL-запрос и выполняет его в PostgreSQL через **MCP (Model Context Protocol)**. Демонстрирует интеграцию LLM с пайплайнами данных.
 
-## 📸 Скриншот
+## 📸 Скриншоты
 
-**Работа агента (задача → SQL → результат):**
+**1. Работа агента с облачной LLM (заглушка):**
 
 ![Agent Workflow](assets/agent_workflow.png)
+
+**2. Работа агента с локальной моделью Qwen (Ollama):**
+
+![Local Agent Workflow](assets/local_agent_workflow.png)
 
 ## 🎯 Зачем это
 
@@ -70,6 +74,11 @@ SELECT COUNT(*) AS total_rows, COUNT(*) FILTER (WHERE total_revenue IS NULL) AS 
 📊 Результат от агента:
 {"columns": ["total_rows", "null_rows"], "rows": [[387875, 0]], "row_count": 1, "execution_time_ms": 240.73}
 ```
+### Локальный запуск (Ollama)
+Если нет API-ключа, можно запустить агента локально:
+1. Установите [Ollama](https://ollama.com/).
+2. Скачайте модель: `ollama pull qwen2.5-coder:7b`.
+3. Запустите: `python agent_local.py`.
 
 ## 🔮 Что дальше (с API-ключом)
 
