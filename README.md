@@ -5,12 +5,15 @@ Pet-проект: AI-агент, который принимает задачу 
 ## 📸 Скриншоты
 
 **1. Чат-бот для аналитики продаж (вопрос → SQL → данные):**
+
 ![Chat Agent](assets/chat_agent.png)
 
 **2. Проверка пропусков (локальная модель Qwen):**
+
 ![Local Agent](assets/local_agent_workflow.png)
 
 **3. Агент для анализа вакансий (база course):**
+
 ![Jobs Agent](assets/jobs_agent.png)
 
 ## 🎯 Зачем это
