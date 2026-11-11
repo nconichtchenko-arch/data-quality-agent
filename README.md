@@ -5,9 +5,11 @@ Pet-проект: AI-агент, который принимает задачу 
 ## 📸 Скриншоты
 
 **1. Чат-бот: вопрос на русском → SQL → данные:**
+
 ![Chat Agent](assets/chat_agent.png)
 
 **2. Проверка пропусков (локальная модель Qwen):**
+
 ![Local Agent](assets/local_agent_workflow.png)
 
 ## 🎯 Зачем это
