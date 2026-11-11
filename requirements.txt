@@ -1,0 +1,3 @@
+mcp
+mcp-postgres-server
+psycopg2-binary
