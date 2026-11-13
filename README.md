@@ -11,12 +11,15 @@ Pet-проект: AI-агент, который принимает задачу 
 ## 📸 Скриншоты
 
 **1. Веб-интерфейс для агента по продажам (Streamlit):**
+
 ![Sales Chat](assets/sales_chat.png)
 
 **2. Веб-интерфейс для агента по вакансиям (Streamlit):**
+
 ![Jobs Chat](assets/jobs_chat.png)
 
 **3. Консольный режим (для истории):**
+
 ![Local Agent](assets/local_agent_workflow.png)
 
 ## 🎯 Зачем это
